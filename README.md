@@ -18,7 +18,7 @@ mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/itdoginf
 
 Сгенерировать UIID, Private и public keys, Short ID
 ```
-docker run itdoginfo/sing-box:v1.11.4 gen-vless
+docker run itdoginfo/sing-box:v1.12.5 gen-vless
 ```
 
 Вставить полученные значения и ваш домен в environment docker-compose.
@@ -50,7 +50,7 @@ mkdir config && wget -O config/config.json https://raw.githubusercontent.com/itd
 
 Сгенерировать ключи, short_id и первый UUID
 ```
-docker run itdoginfo/sing-box:v1.11.14 gen-vless
+docker run itdoginfo/sing-box:v1.12.5 gen-vless
 ```
 
 `PrivateKey`, `SHORT_ID` подставить в объект **tls**.

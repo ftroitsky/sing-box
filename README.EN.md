@@ -16,7 +16,7 @@ mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/itdoginf
 
 Generate UUID, private and public keys, and short ID:
 ```
-docker run itdoginfo/sing-box:v1.11.4 gen-vless
+docker run itdoginfo/sing-box:v1.12.5 gen-vless
 ```
 
 Insert the generated values and your domain into the `environment` section of `docker-compose.yml`.
@@ -48,7 +48,7 @@ If you use your own config, only the `SERVER` and `PUBLIC_KEY` variables are req
 
 Generate keys, short_id, and the first UUID:
 ```
-docker run itdoginfo/sing-box:v1.11.14 gen-vless
+docker run itdoginfo/sing-box:v1.12.5 gen-vless
 ```
 
 Insert `PrivateKey` and `SHORT_ID` into the **tls** object.  

@@ -1,7 +1,7 @@
 services:
   sing-box:
     container_name: sing-box
-    image: itdoginfo/sing-box:v1.11.14
+    image: itdoginfo/sing-box:v1.12.5
     ports:
       - "443:443"
     environment:
