@@ -33,14 +33,9 @@ docker exec sing-box show
 ```
 
 ## Управление устройствами
-Чтобы добавить новое устройство VLESS, выполните следующую команду:
+Чтобы добавить новое устройство, выполните следующую команду:
 ```
-docker exec sing-box add-device vless "device_name"
-```
-
-Чтобы добавить новое устройство WireGuard, выполните следующую команду:
-```
-docker exec sing-box add-device wireguard "device_name"
+docker exec sing-box add-device "device_name"
 ```
 Это создаст новое устройство и сохранит файлы конфигурации в каталоге `devices/device_name`.
 

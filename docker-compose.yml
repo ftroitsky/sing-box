@@ -11,6 +11,7 @@ services:
       UUID: ${UUID}
       PRIVATE_KEY: ${PRIVATE_KEY}
       SHORT_ID: ${SHORT_ID}
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
     restart: always
     # Enable for custom config (multiple accounts for example)
     # volumes:
