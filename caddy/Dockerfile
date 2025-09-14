@@ -7,3 +7,4 @@ COPY Caddyfile-template entrypoint.sh /opt/
 ENTRYPOINT ["/opt/entrypoint.sh"]
 
 CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+
