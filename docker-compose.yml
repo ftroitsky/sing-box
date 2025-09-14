@@ -24,6 +24,9 @@ services:
     image: ftroitsky/caddy-self-masking:2.10.0
     ports:
       - "80:80"
+    dns:
+      - 8.8.4.4
+      - 8.8.8.8
     environment:
       SERVER: ${SERVER}
       DEBUG: 0
