@@ -13,3 +13,4 @@ COPY gen* /bin/
 ENTRYPOINT ["/opt/entrypoint.sh"]
 
 CMD ["sing-box", "--config", "/etc/sing-box/config.json", "run"]
+
