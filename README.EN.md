@@ -1,5 +1,5 @@
-[![Docker pulls](https://img.shields.io/docker/pulls/itdoginfo/sing-box?logo=docker&style=flat-square)](https://hub.docker.com/r/itdoginfo/sing-box)
-[![GitHub stars](https://img.shields.io/github/stars/itdoginfo/sing-box?logo=github&style=flat-square)](https://github.com/itdoginfo/sing-box/)
+[![Docker pulls](https://img.shields.io/docker/pulls/ftroitsky/sing-box?logo=docker&style=flat-square)](https://hub.docker.com/r/ftroitsky/sing-box)
+[![GitHub stars](https://img.shields.io/github/stars/ftroitsky/sing-box?logo=github&style=flat-square)](https://github.com/ftroitsky/sing-box/)
 
 # Self-masked VLESS+Reality server via Sing-box
 
@@ -11,15 +11,13 @@
 
 ## Installation
 ```
-mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/itdoginfo/sing-box/main/docker-compose.yml
+mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/ftroitsky/sing-box/main/docker-compose.yml
 ```
 
-Generate UUID, private and public keys, and short ID:
+Generate a `.env` file with your credentials:
 ```
-docker run itdoginfo/sing-box:v1.12.5 gen-vless
+docker run --rm -it -v $(pwd):/app ftroitsky/sing-box:v1.12.5 gen-vless
 ```
-
-Insert the generated values and your domain into the `environment` section of `docker-compose.yml`.
 
 Start the container:
 ```
@@ -32,6 +30,18 @@ Get connection details for your devices:
 docker exec sing-box show
 ```
 
+## Device Management
+To add a new VLESS device, run the following command:
+```
+docker exec sing-box add-device vless "device_name"
+```
+
+To add a new WireGuard device, run the following command:
+```
+docker exec sing-box add-device wireguard "device_name"
+```
+This will create a new device and store the configuration files in the `devices/device_name` directory.
+
 ## Working with multiple accounts
 In `docker-compose.yml`, uncomment:
 ```
@@ -41,14 +51,14 @@ In `docker-compose.yml`, uncomment:
 
 Download the config template:
 ```
-mkdir config && wget -O config/config.json https://raw.githubusercontent.com/itdoginfo/sing-box/main/config-examples/some-users.json
+mkdir config && wget -O config/config.json https://raw.githubusercontent.com/ftroitsky/sing-box/main/config-examples/some-users.json
 ```
 
-If you use your own config, only the `SERVER` and `PUBLIC_KEY` variables are required in `docker-compose.yml`.
+If you use your own config, only the `SERVER` and `PUBLIC_KEY` variables are required in the `.env` file.
 
 Generate keys, short_id, and the first UUID:
 ```
-docker run itdoginfo/sing-box:v1.12.5 gen-vless
+docker run ftroitsky/sing-box:v1.12.5 gen-vless
 ```
 
 Insert `PrivateKey` and `SHORT_ID` into the **tls** object.  

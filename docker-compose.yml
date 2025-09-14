@@ -1,15 +1,16 @@
 services:
   sing-box:
     container_name: sing-box
-    image: itdoginfo/sing-box:v1.12.5
+    image: ftroitsky/sing-box:v1.12.5
     ports:
       - "443:443"
+      - "51820:51820/udp"
     environment:
-      SERVER: DOMAIN
-      PUBLIC_KEY: PBK
-      UUID: UUID
-      PRIVATE_KEY: PRK
-      SHORT_ID: SHORTID
+      SERVER: ${SERVER}
+      PUBLIC_KEY: ${PUBLIC_KEY}
+      UUID: ${UUID}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      SHORT_ID: ${SHORT_ID}
     restart: always
     # Enable for custom config (multiple accounts for example)
     # volumes:
@@ -17,11 +18,11 @@ services:
 
   caddy:
     container_name: caddy
-    image: itdoginfo/caddy-self-masking:2.10.0
+    image: ftroitsky/caddy-self-masking:2.10.0
     ports:
       - "80:80"
     environment:
-      SERVER: DOMAIN
+      SERVER: ${SERVER}
       DEBUG: 0
     restart: always
     volumes:

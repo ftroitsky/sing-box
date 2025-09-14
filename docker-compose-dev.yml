@@ -4,24 +4,27 @@ services:
     build:
       context: sing-box
       args:
-        RELEASE: v1.11.14
+        RELEASE: v1.12.5
     ports:
       - "443:443"
+      - "51820:51820/udp"
     environment:
-      SERVER: DOMAIN
-      PUBLIC_KEY: PBK
-      UUID: UUID
-      PRIVATE_KEY: PRK
-      SHORT_ID: SHORTID
-    # volumes:
-    #  - ./config:/etc/sing-box/
+      SERVER: ${SERVER}
+      PUBLIC_KEY: ${PUBLIC_KEY}
+      UUID: ${UUID}
+      PRIVATE_KEY: ${PRIVATE_KEY}
+      SHORT_ID: ${SHORT_ID}
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+    volumes:
+      - ./sing-box:/opt
+      - ./devices:/etc/sing-box/devices
 
   caddy:
     build:
       context: ./caddy
     container_name: caddy
     environment:
-      SERVER: DOMAIN
+      SERVER: ${SERVER}
       DEBUG: 0
     restart: always
     volumes:

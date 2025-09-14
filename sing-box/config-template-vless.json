@@ -28,5 +28,15 @@
         }
       }
     }
+  ],
+  "endpoints": [
+    {
+      "type": "wireguard",
+      "tag": "wg-ep",
+      "listen_port": 51820,
+      "private_key": "{{WIREGUARD_PRIVATE_KEY}}",
+      "peers": [],
+      "address": ["10.0.0.1/24"]
+    }
   ]
 }

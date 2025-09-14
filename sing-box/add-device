@@ -1,0 +1,108 @@
+#!/bin/bash
+
+set -e
+
+CONFIG_FILE="/etc/sing-box/config.json"
+DEVICES_DIR="/etc/sing-box/devices"
+
+# Function to generate client configurations
+function generate_client_configs() {
+  DEVICE_NAME="$1"
+  CLIENT_UUID="$2"
+
+  # VLESS config
+  VLESS_LINK=$(/opt/show-template -u $CLIENT_UUID -n $DEVICE_NAME)
+  VLESS_FILE="$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}_vless.txt"
+  echo "$VLESS_LINK" > "$VLESS_FILE"
+  qrencode -t png -o "$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}_vless.png" "$VLESS_LINK"
+
+  # WireGuard config
+  WG_PRIVATE_KEY=$(wg genkey)
+  WG_PUBLIC_KEY=$(echo "$WG_PRIVATE_KEY" | wg pubkey)
+  SERVER_PUBLIC_KEY=$(jq -r '(.endpoints[] | select(.type=="wireguard")).private_key' "$CONFIG_FILE" | wg pubkey)
+  
+  # Get the next available IP address
+  LAST_IP=$(jq -r '(.endpoints[] | select(.type=="wireguard")).peers[-1].allowed_ips[0]' "$CONFIG_FILE" | cut -d . -f 4 | cut -d / -f 1)
+  if [ -z "$LAST_IP" ]; then
+    NEXT_IP=2
+  else
+    NEXT_IP=$((LAST_IP + 1))
+  fi
+
+  WG_CONF_FILE="$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}_wg.conf"
+  cat <<EOF > "$WG_CONF_FILE"
+[Interface]
+PrivateKey = $WG_PRIVATE_KEY
+Address = 10.0.0.$NEXT_IP/32
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = $SERVER_PUBLIC_KEY
+Endpoint = ${SERVER}:51820
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 25
+EOF
+
+  qrencode -t png -o "$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}_wg.png" -r "$WG_CONF_FILE"
+
+  # Add WireGuard peer to config
+  NEW_PEER=$(cat <<EOF
+{
+  "public_key": "$WG_PUBLIC_KEY",
+  "allowed_ips": ["10.0.0.$NEXT_IP/32"]
+}
+EOF
+)
+  TEMP_CONFIG=$(jq --argjson newPeer "$NEW_PEER" '(.endpoints[] | select(.type=="wireguard")).peers += [$newPeer]' "$CONFIG_FILE")
+  echo "$TEMP_CONFIG" > "$CONFIG_FILE"
+
+  # Create zip archive
+  zip -j "$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}.zip" "$VLESS_FILE" "$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}_vless.png" "$WG_CONF_FILE" "$DEVICES_DIR/$DEVICE_NAME/${DEVICE_NAME}_wg.png"
+
+  echo "Device '$DEVICE_NAME' added successfully."
+  echo
+  echo "VLESS config link:"
+  cat "$VLESS_FILE"
+  echo
+  echo "VLESS QR code:"
+  qrencode -t ANSIUTF8 "$VLESS_LINK"
+  echo
+  echo "WireGuard config file:"
+  cat "$WG_CONF_FILE"
+  echo
+  echo "WireGuard QR code:"
+  qrencode -t ANSIUTF8 -r "$WG_CONF_FILE"
+
+  # Formatted VLESS output
+  SHORT_ID=$(jq -r '.inbounds[0].tls.reality.short_id[0]' "$CONFIG_FILE")
+  echo
+  echo "VLESS configuration details:"
+  echo "  Adress: ${SERVER}"
+  echo "  Port: 443"
+  echo "  UUID: ${CLIENT_UUID}"
+  echo "  Reality: true, flow: xtls-rprx-vision"
+  echo "  Fake server (SNI, Server name): ${SERVER}"
+  echo "  Public key: ${PUBLIC_KEY}"
+  echo "  Short ID: ${SHORT_ID}"
+}
+
+DEVICE_NAME="$1"
+
+if [ -z "$DEVICE_NAME" ]; then
+  echo "Usage: add-device <device_name>"
+  exit 1
+fi
+
+# Create device directory
+mkdir -p "$DEVICES_DIR/$DEVICE_NAME"
+
+# Generate a new UUID for the VLESS user
+NEW_UUID=$(sing-box generate uuid)
+
+# Add the new VLESS user to the config file
+NEW_USER=$(jq -n --arg name "$DEVICE_NAME" --arg uuid "$NEW_UUID" '{name: $name, uuid: $uuid, flow: "xtls-rprx-vision"}')
+TEMP_CONFIG=$(jq --argjson newUser "$NEW_USER" '.inbounds[0].users += [$newUser]' "$CONFIG_FILE")
+echo "$TEMP_CONFIG" > "$CONFIG_FILE"
+
+# Generate client configs
+generate_client_configs "$DEVICE_NAME" "$NEW_UUID"

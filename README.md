@@ -1,5 +1,5 @@
-[![Docker pulls](https://img.shields.io/docker/pulls/itdoginfo/sing-box?logo=docker&style=flat-square)](https://hub.docker.com/r/itdoginfo/sing-box)
-[![GitHub stars](https://img.shields.io/github/stars/itdoginfo/sing-box?logo=github&style=flat-square)](https://github.com/itdoginfo/sing-box/)
+[![Docker pulls](https://img.shields.io/docker/pulls/ftroitsky/sing-box?logo=docker&style=flat-square)](https://hub.docker.com/r/ftroitsky/sing-box)
+[![GitHub stars](https://img.shields.io/github/stars/ftroitsky/sing-box?logo=github&style=flat-square)](https://github.com/ftroitsky/sing-box/)
 
 [English README](https://github.com/itdoginfo/sing-box/blob/main/README.EN.md)
 
@@ -13,15 +13,13 @@ UPD 4.07.2025 Начинаяя с образа 1.11.14 убран Shadowsocks202
 
 ## Установка
 ```
-mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/itdoginfo/sing-box/main/docker-compose.yml
+mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/ftroitsky/sing-box/main/docker-compose.yml
 ```
 
-Сгенерировать UIID, Private и public keys, Short ID
+Сгенерировать `.env` файл с данными для подключения:
 ```
-docker run itdoginfo/sing-box:v1.12.5 gen-vless
+docker run --rm -it -v $(pwd):/app ftroitsky/sing-box:v1.12.5 gen-vless
 ```
-
-Вставить полученные значения и ваш домен в environment docker-compose.
 
 Поднять контейнер
 ```
@@ -34,6 +32,18 @@ docker compose up -d
 docker exec sing-box show
 ```
 
+## Управление устройствами
+Чтобы добавить новое устройство VLESS, выполните следующую команду:
+```
+docker exec sing-box add-device vless "device_name"
+```
+
+Чтобы добавить новое устройство WireGuard, выполните следующую команду:
+```
+docker exec sing-box add-device wireguard "device_name"
+```
+Это создаст новое устройство и сохранит файлы конфигурации в каталоге `devices/device_name`.
+
 ## Работа с несколькими аккаунтами
 В docker-compose.yml раскомментировать
 ```
@@ -43,14 +53,14 @@ docker exec sing-box show
 
 Скачать темплейт конфига
 ```
-mkdir config && wget -O config/config.json https://raw.githubusercontent.com/itdoginfo/sing-box/main/config-examples/some-users.json
+mkdir config && wget -O config/config.json https://raw.githubusercontent.com/ftroitsky/sing-box/main/config-examples/some-users.json
 ```
 
-При своём конфиге в docker-compose нужны только переменные `SERVER` и `PUBLIC_KEY`.
+При своём конфиге в `.env` файле нужны только переменные `SERVER` и `PUBLIC_KEY`.
 
 Сгенерировать ключи, short_id и первый UUID
 ```
-docker run itdoginfo/sing-box:v1.12.5 gen-vless
+docker run ftroitsky/sing-box:v1.12.5 gen-vless
 ```
 
 `PrivateKey`, `SHORT_ID` подставить в объект **tls**.

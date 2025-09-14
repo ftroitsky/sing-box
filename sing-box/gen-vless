@@ -1,6 +1,31 @@
-echo "UIID:"
-sing-box generate uuid
-echo "PRIVATE_KEY & PUBLIC_KEY:"
-sing-box generate reality-keypair
-echo "SHORT_ID:"
-sing-box generate rand --hex 8
+#!/bin/bash
+
+# Check if .env file exists
+if [ -f /app/.env ]; then
+    echo "Existing .env file found. Please remove it before generating a new one."
+    exit 1
+fi
+
+# Prompt for domain
+read -p "Enter your domain (e.g., example.com): " DOMAIN
+
+# Generate credentials
+UUID=$(sing-box generate uuid)
+REALITY_KEYPAIR=$(sing-box generate reality-keypair)
+PRIVATE_KEY=$(echo "$REALITY_KEYPAIR" | grep "PrivateKey" | awk '{print $2}')
+PUBLIC_KEY=$(echo "$REALITY_KEYPAIR" | grep "PublicKey" | awk '{print $2}')
+SHORT_ID=$(sing-box generate rand --hex 8)
+WIREGUARD_PRIVATE_KEY=$(wg genkey)
+
+# Create .env file
+cat <<EOF > /app/.env
+SERVER=$DOMAIN
+PUBLIC_KEY=$PUBLIC_KEY
+UUID=$UUID
+PRIVATE_KEY=$PRIVATE_KEY
+SHORT_ID=$SHORT_ID
+WIREGUARD_PRIVATE_KEY=$WIREGUARD_PRIVATE_KEY
+EOF
+
+echo ".env file created successfully with the following values:"
+cat /app/.env
