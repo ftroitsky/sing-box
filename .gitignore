@@ -1,3 +1,4 @@
 .env
 devices/
 caddy/caddy_data/
+OUTLINE.md
