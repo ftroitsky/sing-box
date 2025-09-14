@@ -18,7 +18,7 @@ mkdir sing-box && cd sing-box && wget https://raw.githubusercontent.com/ftroitsk
 
 Сгенерировать `.env` файл с данными для подключения:
 ```
-docker run --rm -it -v $(pwd):/app ftroitsky/sing-box:v1.12.5 gen-vless
+docker run --rm -it -v $(pwd):/app ftroitsky/sing-box:v1.12.8 gen-vless
 ```
 
 Поднять контейнер

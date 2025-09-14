@@ -1,7 +1,7 @@
 services:
   sing-box:
     container_name: sing-box
-    image: ftroitsky/sing-box:v1.12.5
+    image: ftroitsky/sing-box:v1.12.8
     ports:
       - "443:443"
       - "51820:51820/udp"
@@ -12,6 +12,8 @@ services:
       PRIVATE_KEY: ${PRIVATE_KEY}
       SHORT_ID: ${SHORT_ID}
       WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+    volumes:
+      - ./devices:/etc/sing-box/devices
     restart: always
     # Enable for custom config (multiple accounts for example)
     # volumes:
